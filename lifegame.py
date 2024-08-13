@@ -6,8 +6,10 @@ import math
 from tkinter import font
 
 # 変数・定数の定義 --- (*1)
-COLS, ROWS = [120, 120] # ステージのサイズを定義
-CW = 5 # セルの描画サイズ
+# 600 1(12, 50) 2(24 25) 3(40, 15) 4(60, 12) 5(120 5)
+SIZE_LIST = [12, 24, 40, 60, 120]
+COLS, ROWS = [SIZE_LIST[2], SIZE_LIST[2]] # ステージのサイズを定義
+CW = 600//COLS # セルの描画サイズ
 
 root_width = CW * COLS
 root_height = CW * ROWS
@@ -55,8 +57,8 @@ class MyFrame(tk.Frame):
         label3.grid(row=8, column=0, sticky=tk.S)
 
         # フィールドの大きさを変更するためのスライドバー
-        self.scale3 = tk.Scale(self, from_=1, to=30, orient=tk.HORIZONTAL)
-        self.scale3.set(20)
+        self.scale3 = tk.Scale(self, from_=0, to=4, orient=tk.HORIZONTAL)
+        self.scale3.set(2)
         self.scale3.grid(row=9, column=0, sticky=tk.N)
 
 
@@ -76,7 +78,14 @@ class MyFrame(tk.Frame):
         self.setdata()
         self.draw_stage()
         self.start = False
-
+    
+    def change_size(self):
+        global COLS
+        global ROWS
+        global CW
+        COLS = SIZE_LIST[self.scale3.get()]
+        ROWS = SIZE_LIST[self.scale3.get()]
+        CW = 600//COLS
 
     def start_stop(self):
         if self.start == False:
@@ -101,10 +110,12 @@ class MyFrame(tk.Frame):
         self.b['text'] = "スタート"
     
     def reset_all(self):
+        self.change_size()
         self.data = [[0] * COLS for i in range(ROWS)]
         self.step()
 
     def setdata(self):
+        self.change_size()
         self.data = []
         for y in range(0, ROWS): # ステージをランダムに初期化
             self.data.append([(randint(0, 99) < self.scale2.get()) for x in range(0, COLS)])
@@ -118,8 +129,6 @@ class MyFrame(tk.Frame):
         self.draw_stage()
         self.start = False
         self.b['text'] = "スタート"
-
-
 
 
     # ライフゲームのルールを実装したもの --- (*2)
